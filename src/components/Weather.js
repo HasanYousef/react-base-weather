@@ -63,6 +63,7 @@ const Weather = (props) => {
     fetchData(city);
   }, [city, unit]);
 
+  let lastDate = "";
   return (
     <div>
       <WelcomeHeader />
@@ -83,18 +84,24 @@ const Weather = (props) => {
         weather.main && <Typography>{`Current weather in ${city}: ${weather.main.temp} ${unit === 'metric' ? '°C' : '°F'}`}</Typography>
       }
 
+      <Typography>Expected tempretures this week: </Typography>
       {
         (weekWeather && weekWeather.list) &&
-        weekWeather.list.map(row => (
-          <Card className={classes.card}>
-            <CardContent>
-              <Typography>{row.main.temp + (unit === 'metric' ? '°C' : '°F')}</Typography>
-              {
-                (new Date(row.dt_txt)).toLocaleDateString()
-              }
-            </CardContent>
-          </Card>
-        ))
+        weekWeather.list.map(row => {
+          const date = (new Date(row.dt_txt)).toLocaleDateString();
+          lastDate = date.split(" ")[0];
+          return (
+            date !== lastDate ? null :
+            <Card className={classes.card}>
+              <CardContent>
+                <Typography>{row.main.temp + (unit === 'metric' ? '°C' : '°F')}</Typography>
+                {
+                  date
+                }
+              </CardContent>
+            </Card>
+          );
+        })
       }
     </div>
   );
